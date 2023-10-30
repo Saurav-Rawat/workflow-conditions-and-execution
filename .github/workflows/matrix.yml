@@ -17,8 +17,9 @@ jobs:
         # to exclude a specific combination in matrix
         exclude:
           - node-versions: 12
-            operating-systems: [ubuntu-latest, windows-latest]
-
+            operating-systems: ubuntu-latest
+          - node-versions: 12
+            operating-systems: windows-latest
     # it will run same job(parallely) multiple times on different operating systems
     runs-on: ${{ matrix.operating-systems }}
     steps:
