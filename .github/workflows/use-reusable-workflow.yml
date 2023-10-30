@@ -82,6 +82,8 @@ jobs:
     # path for reusable workflow
     # this path can be in another repo as well
     uses: ./.github/workflows/reusable.yml
+    with:
+      artifact-name: dist-files
   report:
     needs: [test, lint, build, deploy]
     # this job would run only if any of jobs in needs would fail

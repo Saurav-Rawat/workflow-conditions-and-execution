@@ -1,9 +1,30 @@
 name: reusable-deploy
 # this allows this workflow to be called from other workflows
-on: workflow_call
+on:
+  workflow_call:
+    # as we want reusable workflows to be generic we can have inputs i.e the values that can be dynamic
+    # and can be changing based on parent workflows
+    inputs:
+      # bellow name can be anything
+      artifact-name:
+        # bellow are the keys that are pre defined and not given by us.. bellow info tells us about the input meta data
+        description: name of deployable artifact files
+        # if bellow is true and input is not provided than workflow will fail
+        required: false
+        # we can provide default values
+        default: dist
+        # type i.e data type: number boolean string etc
+        type: string
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: get code
+        uses: actions/download-artifact@v3
+        with:
+          # artifact-name we pass in parent workflow as an input
+          name: ${{ inputs.artifact-name }}
+      - name: list files
+        run: ls
       - name: output info
         run: echo "deploy"
