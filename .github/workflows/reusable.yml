@@ -1,0 +1,9 @@
+name: reusable-deploy
+# this allows this workflow to be called from other workflows
+on: workflow_call
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: output info
+        run: echo "deploy"

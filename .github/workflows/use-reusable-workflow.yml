@@ -1,0 +1,94 @@
+name: use-reusable-workflow
+on:
+  push:
+    branches:
+      - master
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        # actions/cache@v3 gives cache-hit as a output which is true or false i.e if we found cache we get true
+        # we only want to do npm ci if there is no node_ modules folder
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Lint code
+        run: npm run lint
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        # actions/cache@v3 gives cache-hit as a output which is true or false i.e if we found cache we get true
+        # we only want to do npm ci if there is no node_ modules folder
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Test code
+        id: run-test
+        run: npm run test
+        # we dont want to upload test report always i.e we only want to upload it if some test fail
+      - name: Upload test report
+        # steps.run-tests.outcome will return value success,failure,cancelled,skipped
+        # there are four special conditional functions failure()(returns true on jon failure)
+        # success()(returns true on job success) always()(returns true always) cancelled()(returns true if job is cancelled)
+        # by adding failure we made sure if "any of" above step fails "and" steps.run-test.outcome == 'failure' only than next step should run
+        if: failure() && steps.run-test.outcome == 'failure'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: test.json
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        # actions/cache@v3 gives cache-hit as a output which is true or false i.e if we found cache we get true
+        # we only want to do npm ci if there is no node_ modules folder
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Build website
+        id: build-website
+        run: npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-files
+          path: dist
+  deploy:
+    needs: build
+    # path for reusable workflow
+    # this path can be in another repo as well
+    uses: ./.github/workflows/reusable.yml
+  report:
+    needs: [test, lint, build, deploy]
+    # this job would run only if any of jobs in needs would fail
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output info
+        run: |
+          echo "Something went wrong"
+          echo ${{ github }}
