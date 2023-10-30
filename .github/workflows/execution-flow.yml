@@ -90,7 +90,7 @@ jobs:
       - name: Deploy
         run: echo "Deploying..."
   report:
-    needs: [test, lint]
+    needs: [test, lint, build, deploy]
     # this job would run only if any of jobs in needs would fail
     if: failure()
     runs-on: ubuntu-latest
