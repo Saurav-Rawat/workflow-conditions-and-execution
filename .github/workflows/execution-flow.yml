@@ -13,9 +13,12 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+        # actions/cache@v3 gives cache-hit as a output which is true or false i.e if we found cache we get true
+        # we only want to do npm ci if there is no node_ modules folder
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Lint code
         run: npm run lint
@@ -28,9 +31,12 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+        # actions/cache@v3 gives cache-hit as a output which is true or false i.e if we found cache we get true
+        # we only want to do npm ci if there is no node_ modules folder
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test code
         id: run-test
@@ -56,9 +62,12 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
+        # actions/cache@v3 gives cache-hit as a output which is true or false i.e if we found cache we get true
+        # we only want to do npm ci if there is no node_ modules folder
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Build website
         id: build-website
