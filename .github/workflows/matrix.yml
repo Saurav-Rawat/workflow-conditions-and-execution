@@ -2,6 +2,8 @@ name: matrix-demo
 on: push
 jobs:
   build:
+    # added continue on error on job level as we want other jobs to run even if any job fails on matrix level
+    continue-on-error: true
     strategy:
       # idea behind matrix is that you can run your jobs with multiple configurations
       matrix:
