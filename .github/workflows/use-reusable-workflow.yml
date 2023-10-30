@@ -82,8 +82,12 @@ jobs:
     # path for reusable workflow
     # this path can be in another repo as well
     uses: ./.github/workflows/reusable.yml
+    # we can pass inputs like bellow in reusable worlflows
     with:
       artifact-name: dist-files
+    # we can pass secrets like this in reusable worlflows
+    # secrets:
+    #   some-secret: ${{ secrets.some-secret }}
   report:
     needs: [test, lint, build, deploy]
     # this job would run only if any of jobs in needs would fail

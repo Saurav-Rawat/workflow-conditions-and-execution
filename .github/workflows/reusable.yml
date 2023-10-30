@@ -24,6 +24,9 @@ jobs:
         with:
           # artifact-name we pass in parent workflow as an input
           name: ${{ inputs.artifact-name }}
+        # secrets:
+        #   some-secret:
+        #     required: true
       - name: list files
         run: ls
       - name: output info
