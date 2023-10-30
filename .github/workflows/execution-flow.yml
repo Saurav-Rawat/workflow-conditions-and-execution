@@ -40,7 +40,7 @@ jobs:
         # steps.run-tests.outcome will return value success,failure,cancelled,skipped
         # there are four special conditional functions failure()(returns true on jon failure)
         # success()(returns true on job success) always()(returns true always) cancelled()(returns true if job is cancelled)
-        # by adding failure we made sure if any of above step fails "and" steps.run-test.outcome == 'failure' only than next step should run
+        # by adding failure we made sure if "any of" above step fails "and" steps.run-test.outcome == 'failure' only than next step should run
         if: failure() && steps.run-test.outcome == 'failure'
         uses: actions/upload-artifact@v3
         with:
@@ -80,3 +80,13 @@ jobs:
         run: ls
       - name: Deploy
         run: echo "Deploying..."
+  report:
+    needs: [test, lint]
+    # this job would run only if any of jobs in needs would fail
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output info
+        run: |
+          echo "Something went wrong"
+          echo ${{ github }}
