@@ -88,6 +88,12 @@ jobs:
     # we can pass secrets like this in reusable worlflows
     # secrets:
     #   some-secret: ${{ secrets.some-secret }}
+  print-deploy-result:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: print deploy output
+        run: echo "${{ needs.deploy.outputs.result }}"
   report:
     needs: [test, lint, build, deploy]
     # this job would run only if any of jobs in needs would fail
