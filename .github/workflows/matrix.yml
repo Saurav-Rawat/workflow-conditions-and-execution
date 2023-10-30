@@ -10,6 +10,15 @@ jobs:
         # bellow defined names are on us it can be anything except reserved words
         node-versions: [14, 12]
         operating-systems: [ubuntu-latest, windows-latest]
+        # to include a specific combinations
+        include:
+          node-versions: 16
+          operating-systems: ubuntu-latest
+        # to exclude a specific combination in matrix
+        exclude:
+          node-versions: 12
+          operating-systems: [ubuntu-latest, windows-latest]
+
     # it will run same job(parallely) multiple times on different operating systems
     runs-on: ${{ matrix.operating-systems }}
     steps:
